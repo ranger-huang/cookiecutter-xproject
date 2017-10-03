@@ -1,0 +1,25 @@
+{
+    "system_name": "Xingzhe",
+    "system_slug":  "{{ cookiecutter.system_name.lower()|replace(' ', '_')|replace('-', '_')|replace('_', '') }}",
+    "project_name": "Xingzhe Project Name",
+    "project_slug": "{{ cookiecutter.project_name.lower()|replace(' ', '_')|replace('-', '_') }}",
+    "system_project_slug": "{{ cookiecutter.system_slug }}_{{ cookiecutter.project_slug }}",
+    "author_name": "Ranger.Huang",
+    "email": "ranger.huang@bi-ci.com",
+    "description": "A short description of the project.",
+    "domain_name": "{{ project_slug }}.imxingzhe.com",
+    "version": "0.1.0",
+    "timezone": "Asia/Shanghai",
+    "use_celery": "n",
+    "use_docker": "n",
+    "use_compressor": "n",
+    "postgresql_version": ["9.6", "9.5", "9.4", "9.3", "9.2"],
+    "mysql_version": ["5.5", "5.6", "5.7", "8"],
+    "release_date": "{% now 'local' %}",
+    "_extensions": ["jinja2_time.TimeExtension"],
+    "_copy_without_render": [
+      "*.html",
+      "playbook/*"
+    ]
+
+}

@@ -1,0 +1,52 @@
+#http://coverage.readthedocs.io/en/latest/config.html
+[run]
+#parallel = True
+branch = True
+data_file = ./test-reports/.coverage
+include = {{cookiecutter.system_project_slug}}
+omit =
+    {{cookiecutter.system_slug}}_conf/*
+    requirements/*
+    compose/*
+    docs/*
+    */tests.py
+    */tests/*
+    playbook/*
+    server/*
+    */fts/*
+    docs/*
+    test-reports/*
+    manage.py
+
+
+[report]
+exclude_lines =
+    # Have to re-enable the standard pragma
+    pragma: no cover
+
+    def __repr__
+
+    # Don't complain if tests don't hit defensive assertion code:
+    raise AssertionError
+    raise NotImplementedError
+
+    # Don't complain about missing debug-only code:
+    def __repr__
+
+    if self\.debug
+    if settings\.DEBUG
+
+
+    # Don't complain if non-runnable code isn't run:
+    if 0:
+    if __name__ == .__main__.:
+
+ignore_errors = True
+show_missing = True
+
+[html]
+directory = ./test-reports/htmlcov
+
+[xml]
+output = ./test-reports/coverage.xml
+package_depth = 20

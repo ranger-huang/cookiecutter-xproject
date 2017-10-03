@@ -1,0 +1,14 @@
+sh
+pip
+bumpversion
+wheel
+watchdog
+flake8
+tox
+coverage
+Sphinx
+
+pytest
+pytest-runner
+binaryornot
+pytest-cookies

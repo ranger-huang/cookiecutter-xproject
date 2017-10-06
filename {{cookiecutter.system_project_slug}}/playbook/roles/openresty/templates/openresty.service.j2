@@ -1,0 +1,11 @@
+[Service]
+Type=forking
+PIDFile={{ runtime_pidfile }}
+ExecStartPre={{ nginx }} -t -c {{ runtime_config_dir }}/nginx.conf
+ExecStart={{ nginx }} -c {{ runtime_config_dir }}/nginx.conf
+ExecReload=/bin/kill -s HUP $MAINPID
+ExecStop=/bin/kill -s QUIT $MAINPID
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,136 @@
+---
+
+- name: install pkg deps
+  with_items: '{{openresty_pkgs}}'
+  package: name={{item}} state=present
+
+# Openresty
+- name: download tgz...
+  get_url: >
+    url={{openresty_mirror}}/{{openresty_tgz}}
+    dest=/tmp/{{openresty_tgz}}
+    mode=0644
+    timeout={{openresty_timeout_seconds}}
+
+- name: create build dirs
+  with_items:
+    - '{{openresty_build_dir}}'
+    - '{{luarocks_build_dir}}'
+  file: >-
+    path={{item}}
+    state=directory
+    mode=0755
+
+# HOOK
+- name: Include create_build_dir hook
+  include: "{{ openresty_hook_on_create_build_dir }}"
+  when: openresty_hook_on_create_build_dir is defined
+
+
+## -- nginx module
+- name: download more module
+  git: >-
+    repo={{item.repo}}
+    dest={{openresty_build_dir}}/{{item.name}}
+    version={{item.ver}}
+    update=no
+  with_items: '{{ openresty_add_modules }}'
+
+## --  make install
+- name: unarchive openresty...
+  unarchive: >
+    copy=no
+    src=/tmp/{{openresty_tgz}}
+    dest={{openresty_build_dir}}
+    creates={{openresty_build_dir}}/{{openresty_name}}
+
+# HOOK
+- name: Include unarchive sources hook
+  include: "{{ openresty_hook_on_unarchive_sources }}"
+  when: openresty_hook_on_unarchive_sources is defined
+
+# HOOK
+- name: Include pre_configure_openresty hook
+  include: "{{ openresty_hook_on_pre_configure_openresty }}"
+  when: openresty_hook_on_pre_configure_openresty is defined
+
+- name: configure openresty...
+  command: >
+    ./configure
+    --prefix={{openresty_install_dir}}
+    --with-lua51
+    --with-luajit
+    --with-pcre-jit
+    --with-ipv6
+    {% for module in openresty_add_modules|default([]) %}
+    --add-module={{ openresty_build_dir }}/{{ module.name }}
+    {% endfor %}
+    {% for module in openresty_with_modules|default([]) %}
+    --with-{{ module }}
+    {% endfor %}
+    {% for opt in openresty_configure_opts|default([]) %}
+      {{ opt }}
+    {% endfor %}
+    -j2
+  args:
+    chdir: '/{{openresty_build_dir}}/{{openresty_name}}'
+    creates: '/{{openresty_build_dir}}/{{openresty_name}}/Makefile'
+  tags:
+    - configure
+
+- name: make build install...
+  command: make build install
+  args:
+    chdir: '/{{openresty_build_dir}}/{{openresty_name}}'
+    creates: '{{openresty_install_dir}}/nginx/sbin/nginx'
+
+# luarocks
+- name: downloading luarocks...
+  get_url: >-
+    url={{luarocks_tgz_url}}
+    dest=/tmp/{{luarocks_tgz}}
+    mode=0644
+    timeout={{openresty_timeout_seconds}}
+
+- name: unarchive luarocks...
+  unarchive: >
+    copy=no
+    src=/tmp/{{luarocks_tgz}}
+    dest={{luarocks_build_dir}}
+    creates={{luarocks_build_dir}}/{{luarocks_name}}
+
+- name: configure luarocks...
+  command: >
+    ./configure
+    --with-lua={{luajit_dir}}
+    --lua-suffix=jit
+    --with-lua-include={{luajit_include_dir}}
+  args:
+    chdir: /{{luarocks_build_dir}}/{{luarocks_name}}
+    creates: /{{luarocks_build_dir}}/{{luarocks_name}}/config.unix
+
+- name: build and install luarocks...
+  command: make build install
+  args:
+    chdir: /{{luarocks_build_dir}}/{{luarocks_name}}
+    creates: /usr/local/bin/luarocks
+
+## -- install rocks
+- name: install some rocks..
+  with_items: '{{luarocks_install | default([])}}'
+  command: >
+    /usr/local/bin/luarocks install --timeout={{luarocks_timeout_seconds}} {{item}}
+  args:
+    creates: /usr/local/lib/luarocks/rocks/{{item}}
+
+# Cleanup
+- name: cleanup...
+  when: openresty_cleanup
+  with_items:
+    - '{{openresty_build_dir}}'
+    - '{{luarocks_build_dir}}'
+    - '/tmp/{{openresty_tgz}}'
+    - '/tmp/{{luarocks_tgz}}'
+  file: >-
+    path={{item}}
+    state=absent

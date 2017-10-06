@@ -1,0 +1,38 @@
+#jinja2:variable_start_string:'<{' , variable_end_string:'}>', block_start_string:'<%', block_end_string:'%>'
+- name: Setup Nginx Configuration file
+  gather_facts: no
+  vars_prompt:
+    - name: 'hosts'
+      prompt: 'launch to host'
+      private: no
+      default: 'localhost'
+  hosts: "{{ hosts }}"
+  become: yes
+  become_user: root
+
+  pre_tasks:
+    - include_vars: './defaults/deploy_helper.yml'
+    - include_vars: './vars/main.yml'
+
+  tasks:
+    - name: Ensure nginx configration file is present
+      template:
+        src: "./templates/web.nginx.conf.j2"
+        dest: "{{ project_runtime_home }}/web.nginx.conf"
+
+    - name: Ensure nginx configration file is present
+      file:
+        src: "{{ project_runtime_home }}/web.nginx.conf"
+        path: "{{ project_root }}/web.nginx.conf"
+        state: link
+        force: yes
+
+    - name: "Ensure nginx configration file is link to /etc/nginx/{{item}}/"
+      file:
+        src: "{{ project_root }}/web.nginx.conf"
+        path: "/etc/nginx/{{item}}/{{system_project_slug}}.conf"
+        state: link
+        force: yes
+      with_items:
+        - site-available
+        - site-enabled

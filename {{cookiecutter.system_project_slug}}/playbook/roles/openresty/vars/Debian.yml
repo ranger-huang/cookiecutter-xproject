@@ -1,0 +1,36 @@
+---
+openresty_pkgs:
+
+  - build-essential
+  - wget
+  - openssl
+  - libreadline-dev
+  - libncurses5-dev
+  - libpcre3-dev
+  - libssl-dev
+  - libldap2-dev
+  - perl
+  - libperl-dev
+  - make
+  - build-essential
+  #- libpqxx-dev # for http_postgres_module
+
+  # for luarocks unpacking rock file
+  - unzip
+
+  # the HTTP xslt filter module requires the GD library
+  - libxml2
+  - libxml2-dev
+  - libxslt1.1
+  - libxslt1-dev
+  # the HTTP image filter module requires the GD library
+  - libgd3
+  - libgd-dev
+
+  # the GeoIP module requires the GeoIP library
+  - libgeoip-dev
+  - libpam0g-dev
+
+  # the Google perftools module requires the Google perftools
+  - libgoogle-perftools4
+  - libgoogle-perftools-dev

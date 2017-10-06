@@ -1,0 +1,17 @@
+---
+# handlers file for openresty
+- name: started openresty.service
+  systemd:
+    name: openresty.service
+    daemon_reload: yes
+    state: started
+
+- name: reloaded openresty.service
+  systemd:
+    name: openresty.service
+    state: reloaded
+
+- name: restarted openresty.service
+  systemd:
+    name: openresty.service
+    state: restarted

@@ -1,0 +1,20 @@
+---
+
+- name: mkdir www home
+  file:
+    path: "{{runtime_wwwhome}}"
+    state: directory
+
+- name: Add group
+  group:
+    name: "nginx"
+    state: present
+
+- name: Add user
+  user:
+    name: "nginx"
+    comment: "nginx"
+    shell: /usr/sbin/nologin
+    home: "{{ runtime_wwwhome }}"
+    group: nginx
+

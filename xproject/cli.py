@@ -2,16 +2,13 @@
 
 """Console script for cookiecutter_xingzhe_django."""
 
-import click
-
-
-@click.command()
-def main(args=None):
-    """Console script for cookiecutter_xingzhe_django."""
-    click.echo("Replace this message by putting your code into "
-               "xproject.cli.main")
-    click.echo("See click documentation at http://click.pocoo.org/")
-
+def main():
+    from cookiecutter.__main__ import main as cmain
+    from unittest import mock
+    from xproject.loaders import Jinja2OverrideFileSystemLoader as MockFileSystemLoader
+    with mock.patch('cookiecutter.generate.FileSystemLoader',
+                    new_callable=lambda: MockFileSystemLoader):
+        cmain(prog_name="xproject")
 
 if __name__ == "__main__":
     main()

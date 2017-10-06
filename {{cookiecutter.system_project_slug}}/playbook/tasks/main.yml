@@ -1,0 +1,5 @@
+- name: install webdriver
+  brew: name={{item}}
+  with_items:
+    - chromedriver
+    - phantomjs

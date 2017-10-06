@@ -13,8 +13,8 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-import sys
 import os
+import sys
 
 # If extensions (or modules to document with autodoc) are in another
 # directory, add these directories to sys.path here. If the directory is
@@ -55,7 +55,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'cookiecutter-xingzhe-django'
+project = u'cookiecutter-xproject'
 copyright = u"2017, Ranger.Huang"
 
 # The version info for the project you're documenting, acts as replacement
@@ -209,7 +209,7 @@ latex_elements = {
 # [howto/manual]).
 latex_documents = [
     ('index', 'cookiecutter_xingzhe_django.tex',
-     u'cookiecutter-xingzhe-django Documentation',
+     u'cookiecutter-xproject Documentation',
      u'Ranger.Huang', 'manual'),
 ]
 
@@ -240,7 +240,7 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     ('index', 'cookiecutter_xingzhe_django',
-     u'cookiecutter-xingzhe-django Documentation',
+     u'cookiecutter-xproject Documentation',
      [u'Ranger.Huang'], 1)
 ]
 
@@ -255,7 +255,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     ('index', 'cookiecutter_xingzhe_django',
-     u'cookiecutter-xingzhe-django Documentation',
+     u'cookiecutter-xproject Documentation',
      u'Ranger.Huang',
      'cookiecutter_xingzhe_django',
      'One line description of project.',

@@ -1,0 +1,29 @@
+---
+
+#- include_vars:
+#  with_first_found:
+#    - "{{ansible_os_family}}.yml"
+#    - "main.yml"
+
+- file:
+    path: /usr/local/devtools/aliyun
+    state: directory
+    recurse: yes
+
+- name: Ensure command oss python api is present
+  unarchive:
+    src: "https://docs-aliyun.cn-hangzhou.oss.aliyun-inc.com/internal/oss/0.0.4/assets/sdk/OSS_Python_API_20160419.zip"
+    dest: /usr/local/devtools/aliyun/
+    remote_src: True
+    creates: /usr/local/devtools/aliyun/osscmd
+
+- name: link qshell to bin directory
+  file:
+    src: /usr/local/devtools/aliyun/osscmd
+    dest: /usr/local/bin/osscmd
+    state: link
+    force: yes
+    mode: 0755
+
+- name: oss sign in
+  shell: "python /usr/local/devtools/aliyun/osscmd config --id={{aliyun_access_key}} --key={{aliyun_secret_key}}"

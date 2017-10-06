@@ -1,0 +1,107 @@
+python-dateutil
+
+django
+django-model-utils
+django-environ
+zerorpc
+
+# clang ld: library not found for -lss
+# export LIBRARY_PATH=/path/to/openssl/lib
+mysqlclient
+psycopg2
+
+redis
+django-redis-cache
+
+#django-user-agents
+git+https://github.com/dannyboscan/django-user_agents.git#egg=django_user_agents
+
+requests
+python-dateutil
+
+# Restful
+djangorestframework
+rest_condition
+django-filter
+markdown
+
+# Template
+django-qurl-templatetag
+django-spurl
+{% if cookiecutter.use_compressor == 'y' %}
+django_compressor
+{% endif %}
+
+# http://pythonhosted.org/django-memoize/
+django-memoize
+
+# Unicode slugification
+awesome-slugify
+
+# For user registration, either via email or social
+# Well-built with regular release cycles!
+django-allauth
+
+django-rest-swagger
+
+django-import-export
+django-phonenumber-field
+django-crispy-forms
+
+jsonfield
+django-annoying
+
+{% if cookiecutter.use_cas == 'y' %}
+# Cas Client
+django-cas-ng
+# Django Central Authentication Service (CAS) single sign-on and single logout server
+django-mama-cas
+{% endif %}
+
+{% if cookiecutter.use_celery == 'y' %}
+celery[gevent,redis]
+django-celery-results
+flower
+{% endif %}
+
+{% if cookiecutter.use_websocket == 'y' %}
+# Websocket Server
+channels
+asgi_redis
+daphne
+# Channels API exposes a RESTful Streaming API over WebSockets using channels. see: https://github.com/linuxlewis/channels-api
+channels_api
+{% endif %}
+
+# Fulltext search
+django-haystack
+
+ipython
+
+# socket5
+PySocks
+
+django-redis-sessions
+
+
+{% if cookiecutter.use_cloudstorage == 'y' %}
+# Django Storage
+## qiniu
+qiniu
+django-qiniu-storage
+
+## upyun
+upyun
+-e git+git@git.coding.net:bi-ci/upyun-django.git#egg=upyun_django
+
+## aliyun oss
+oss2
+django-aliyun-oss2-storage
+{% endif %}
+
+# for shell command
+sh
+click
+
+# A lightweight, object-oriented state machine implementation in Python.
+transitions

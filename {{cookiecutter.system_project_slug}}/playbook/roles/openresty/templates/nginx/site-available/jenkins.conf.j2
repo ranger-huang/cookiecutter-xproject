@@ -1,0 +1,28 @@
+upstream jenkins_master {
+    server 127.0.0.1:8001;
+}
+
+
+
+server {
+      server_name jenkins.imxingzhe.com;
+      listen 80;
+      #listen 443;
+
+      ssl on;
+      ssl_certificate /etc/letsencrypt/live/www.refactor.cc/fullchain.pem;
+      ssl_certificate_key /etc/letsencrypt/live/www.refactor.cc/privkey.pem;
+      ssl_session_cache shared:SSL:10m;
+      ssl_session_timeout 5m;
+      ssl_protocols SSLv2 SSLv3 TLSv1.2;
+      ssl_ciphers  HIGH:!aNULL:!MD5;
+      ssl_prefer_server_ciphers  on;
+
+
+      error_log {{ runtime_log_dir }}/jenkins.imxingzhe.com-error.log;
+      access_log {{ runtime_log_dir }}/jenkins.imxingzhe.com-access.log;
+
+      location / {
+         proxy_pass http://jenkins_master;
+      }
+}

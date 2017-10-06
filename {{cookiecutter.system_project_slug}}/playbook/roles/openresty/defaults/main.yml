@@ -1,0 +1,49 @@
+---
+# defaults file for openresty
+openresty_ver : '1.11.2.2'
+openresty_mirror : 'https://openresty.org/download'
+openresty_build_dir : '/opt/openresty'
+openresty_install_dir : '/usr/local/openresty'
+nginx : '{{ openresty_install_dir }}/nginx/sbin/nginx'
+
+openresty_timeout_seconds : 600
+
+openresty_cleanup : False
+
+nginx_auth_ldap_ver : master
+
+luajit_ver : '2.1'
+
+luarocks_ver : '2.3.0'
+luarocks_mirror : 'http://luarocks.org/releases'
+luarocks_build_dir : '/opt/luarocks'
+
+luarocks_timeout_seconds: 600
+
+# if you want to control the set of luarocks to install
+luarocks_install :
+  - luasec
+  - luajson
+  - lua-resty-http
+
+openresty_with_modules:
+  - http_iconv_module
+  - http_postgres_module
+
+openresty_add_modules:
+  - { 'repo': 'https://github.com/FRiCKLE/ngx_cache_purge.git',
+      'name': 'ngx_cache_purge',
+      'ver': 'master'
+    }
+  - { 'repo': 'https://github.com/kvspb/nginx-auth-ldap.git',
+      'name': 'nginx-auth-ldap',
+      'ver': 'master'
+    }
+
+openresty_configure_opts: []
+
+runtime_config_dir: /etc/nginx
+runtime_pidfile: /run/nginx.pid
+runtime_log_dir: /data/log/nginx
+runtime_wwwhome: /data/www
+runtime_backup_dir: /data/backup/nginx

@@ -1,0 +1,28 @@
+# Test dependencies go here.
+-r base.txt
+
+django-extensions
+flake8==3.3.0 # pyup: != 2.6.0
+django-test-plus
+factory-boy
+
+# pytest
+pytest-django==3.1.2
+pytest-sugar==0.8.0
+
+django-debug-toolbar
+nose #https://nose.readthedocs.io/en/latest/usage.html
+nose-cov #http://coverage.readthedocs.io/en/latest/config.html
+behave
+selenium
+splinter
+should-dsl #https://pythonhosted.org/should_dsl/available_matchers.html
+behave-django
+django-nose #https://django-nose.readthedocs.io/en/latest/ #installation.html
+behaving
+
+
+nose-allure-plugin
+allure-pytest
+allure-behave
+pytest-allure-adaptor

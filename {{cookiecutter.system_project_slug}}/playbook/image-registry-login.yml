@@ -1,0 +1,12 @@
+#jinja2:variable_start_string:'<{' , variable_end_string:'}>', block_start_string:'<%', block_end_string:'%>'
+- name: Docker Registry Login
+  gather_facts: no
+  hosts: "localhost"
+
+  tasks:
+    - name: docker login to aliyun
+      docker_login:
+        registry: 'registry.cn-hangzhou.aliyuncs.com'
+        username: ''
+        password: ''
+        email: ''

@@ -1,0 +1,69 @@
+#jinja2:variable_start_string:'<{' , variable_end_string:'}>', block_start_string:'<%', block_end_string:'%>'
+- name: Build allure Docker Image
+  gather_facts: no
+  vars_prompt:
+    - name: 'base_image_version'
+      prompt: 'base image version'
+      private: no
+      default: '0.1'
+    - name: 'base_image_name'
+      prompt: 'base image name'
+      private: no
+      default: 'allure-reports'
+    - name: 'base_image_version_to_latest'
+      prompt: 'base image version tag to latest [no, yes]'
+      default: 'yes'
+      private: no
+  hosts: localhost
+  vars:
+    namespace_slug: xingzhe_server
+
+  pre_tasks:
+    - include_vars: './vars/asset.yml'
+    - include_vars: './vars/main.yml'
+
+  tasks:
+    - name: Get Project Root
+      shell: dirname `pwd`
+      register: cmd
+
+    - name: 1. Build an image and push it to a private repo
+      docker_image:
+        path: "{{build_root}}"
+        dockerfile: "{{build_root}}/compose/{{base_image_name}}/Dockerfile"
+        name: "{{base_image_name}}"
+        repository: "{{docker_registry_domain}}/{{namespace_slug}}/{{base_image_name}}"
+        tag: "{{base_image_version}}"
+        pull: yes
+        push: yes
+        rm: False
+      when: "docker_registry_domain != ''"
+      vars:
+        build_root: "{{cmd.stdout}}"
+      register: image_build
+
+    - name: 1. Build an image without push to a private repo
+      docker_image:
+        path: "{{build_root}}"
+        dockerfile: "{{build_root}}/compose/{{base_image_name}}/Dockerfile"
+        name: "{{base_image_name}}"
+        tag: "{{base_image_version}}"
+        rm: False
+      when: "not docker_registry_domain"
+      vars:
+        build_root: "{{cmd.stdout}}"
+      register: image_build
+
+    - name: Remove registry image tag on local
+      docker_image:
+        name: "{{item.name}}"
+        tag: "{{item.tag}}"
+        state: absent
+      with_items:
+        - name: "{{docker_registry_domain}}/{{namespace_slug}}/{{base_image_name}}"
+          tag: "{{base_image_version}}"
+      when: "docker_registry_domain != ''"
+
+    - name: Tag image to latest
+      shell: docker tag {{base_image_name}}:{{base_image_version}} {{base_image_version}}:latest
+      when: base_image_version_to_latest == 'yes'

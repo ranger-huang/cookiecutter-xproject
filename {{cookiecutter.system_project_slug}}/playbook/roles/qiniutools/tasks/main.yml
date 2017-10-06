@@ -1,0 +1,22 @@
+---
+
+- file:
+    path: /usr/local/devtools/qiniu
+    state: directory
+
+- name: Ensure command qshell is present
+  unarchive:
+    src: "http://devtools.qiniu.com/qshell-{{qiniu_qshell_version}}.zip"
+    dest: /usr/local/devtools/qiniu
+    remote_src: True
+    creates: /usr/local/devtools/qiniu/qshell_linux_amd64
+
+- name: link qshell to bin directory
+  file:
+    src: /usr/local/devtools/qiniu/qshell_linux_amd64
+    dest: /usr/local/bin/qshell
+    state: link
+    mode: 0755
+
+- name: qshell sign in
+  shell: "/usr/local/bin/qshell -m account {{qiniu_access_key}} {{qiniu_secret_key}}"

@@ -2,6 +2,6 @@
 Usage
 =====
 
-To use cookiecutter-xingzhe-django in a project::
+To use cookiecutter-xproject in a project::
 
     import cookiecutter_xingzhe_django

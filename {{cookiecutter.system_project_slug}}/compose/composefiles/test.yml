@@ -1,0 +1,20 @@
+version: '2'
+
+services:
+
+  django:
+    image: {{cookiecutter.system_project_short}}_django:latest-test
+    environment:
+      - DJANGO_SETTINGS_MODULE={{cookiecutter.system_slug}}_conf.settings.test
+      - DOT_ENV_FILE=./{{cookiecutter.system_slug}}_conf/test.env
+    env_file:
+      - ./{{cookiecutter.system_slug}}_conf/test.env
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+    links:
+      - redis
+
+  redis:
+    image: redis

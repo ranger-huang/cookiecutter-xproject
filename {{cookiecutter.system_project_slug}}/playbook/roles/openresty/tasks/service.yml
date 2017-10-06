@@ -1,0 +1,11 @@
+
+- name: setup service file
+  template:
+    src: openresty.service.j2
+    dest: "{{ openresty_install_dir }}/openresty.service"
+
+- name: enable openresty service
+  shell: systemctl enable {{ openresty_install_dir }}/openresty.service
+  #systemd:
+  #  enabled: True
+  #  name: openresty.service

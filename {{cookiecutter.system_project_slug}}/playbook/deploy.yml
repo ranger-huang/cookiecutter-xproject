@@ -1,0 +1,25 @@
+#jinja2:variable_start_string:'<{' , variable_end_string:'}>', block_start_string:'<%', block_end_string:'%>'
+- name: Deploy
+  vars_prompt:
+    - name: 'release_version'
+      prompt: 'release version?'
+      default: '0.0.1'
+      private: no
+    - name: 'hosts'
+      prompt: 'launch to host'
+      private: no
+      default: 'localhost'
+    - name: 'project_branch'
+      prompt: 'branch?'
+      private: no
+      default: 'develop'
+  hosts: "{{ hosts }}"
+  become: yes
+  become_user: root
+  #serial: 2
+
+  pre_tasks:
+    - include_vars: './vars/main.yml'
+
+  roles:
+    - { 'role': 'project_deploy', 'project_release': "{{ release_version }}", project_version: '{{project_branch}}' }

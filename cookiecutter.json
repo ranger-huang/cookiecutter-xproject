@@ -1,25 +1,47 @@
 {
-    "system_name": "Xingzhe",
+    "system_name": "XSystem",
     "system_slug":  "{{ cookiecutter.system_name.lower()|replace(' ', '_')|replace('-', '_')|replace('_', '') }}",
-    "project_name": "Xingzhe Project Name",
+    "project_name": "XProject",
     "project_slug": "{{ cookiecutter.project_name.lower()|replace(' ', '_')|replace('-', '_') }}",
     "system_project_slug": "{{ cookiecutter.system_slug }}_{{ cookiecutter.project_slug }}",
-    "author_name": "Ranger.Huang",
-    "email": "ranger.huang@bi-ci.com",
+    "system_project_short": "{{ cookiecutter.system_slug }}{{ cookiecutter.project_slug }}",
+    "system_project_name": "{{ cookiecutter.system_name }} {{ cookiecutter.project_name }}",
+    "system_project_id": "01",
+
+    "author_name": "Your Name",
+    "email": "your.name@domain.com",
+
     "description": "A short description of the project.",
-    "domain_name": "{{ project_slug }}.imxingzhe.com",
+    "domain_name": "{{ cookiecutter.project_slug }}.{{ cookiecutter.system_slug }}.com",
     "version": "0.1.0",
     "timezone": "Asia/Shanghai",
+
+    "use_pycharm": "y",
+    "use_cas": "n",
+    "use_mailhog": "n",
     "use_celery": "n",
     "use_docker": "n",
     "use_compressor": "n",
+    "use_websocket": "n",
+    "use_cloudstorage": "n",
     "postgresql_version": ["9.6", "9.5", "9.4", "9.3", "9.2"],
     "mysql_version": ["5.5", "5.6", "5.7", "8"],
+
+    "python_version": ["3.5", "3.6"],
+    "use_python3": "y",
+    "use_postgresql": "n",
+    "use_postgresql_alias": "db2",
+    "use_mysql": "n",
+    "use_mysql_alias": "default",
+
     "release_date": "{% now 'local' %}",
     "_extensions": ["jinja2_time.TimeExtension"],
     "_copy_without_render": [
-      "*.html",
-      "playbook/*"
+        "playbook/defaults/*",
+        "playbook/files/*",
+        "playbook/handlers/*",
+        "playbook/roles/*",
+        "playbook/tasks/*",
+        "playbook/templates/*"
     ]
-
 }

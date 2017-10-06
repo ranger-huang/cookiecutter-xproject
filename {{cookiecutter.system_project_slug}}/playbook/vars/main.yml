@@ -1,0 +1,56 @@
+#jinja2:variable_start_string:'<{' , variable_end_string:'}>', block_start_string:'<%', block_end_string:'%>'
+# project_deploy
+# ----------------------------------------------------------------------------------------------------
+project_local_path: "{{ playbook_dir }}/.."
+project_name: "changeme"
+project_root: "/data/servers/<{ cookiecutter.system_project_slug }>"
+project_unwanted_items: [ '.git', '.idea', '<{ cookiecutter.system_project_slug }>.iml' ]
+project_git_repo: "git@git.coding.net:bi-ci/<{ cookiecutter.system_project_slug }>.git"
+project_deploy_strategy: git
+project_version: 'develop'
+#project_release: ''
+
+project_environment:
+  ENV: production
+
+project_shared_children: []
+  #- path: "log"
+  #  src: "log"
+
+project_files: []
+project_templates:
+  - src: "templates/web.nginx.conf.j2"
+    dest: "web.nginx.conf"
+
+  - src: "{{playbook_dir}}/../compose/composefiles/production.yml"
+    dest: "dc-production.yml"
+  - src: "{{playbook_dir}}/../compose/composefiles/test.yml"
+    dest: "dc-test.yml"
+  - src: "{{playbook_dir}}/../compose/composefiles/local.yml"
+    dest: "dc-local.yml"
+
+project_deploy_hook_on_initialize: '{{ playbook_dir }}/tasks/deploy_hook_on_initialize.yml'
+project_deploy_hook_on_perform_build: '{{ playbook_dir }}/tasks/deploy_hook_on_perform_build.yml'
+project_deploy_hook_on_finalize: '{{ playbook_dir }}/tasks/deploy_hook_on_finalize.yml'
+
+project_runtime_version: ''
+project_runtime_home: "{{ project_root }}/runtime{{project_runtime_version|default('')}}"
+
+# Name Defined
+# ----------------------------------------------------------------------------------------------------
+system_slug: '<{ cookiecutter.system_slug }>'
+project_slug: '<{ cookiecutter.project_slug }>'
+system_project_id: '<{ cookiecutter.system_project_id }>'
+system_project_slug: "<{ cookiecutter.system_project_slug }>"
+system_project_short: "<{ cookiecutter.system_project_short }>"
+project_apiserver_slug: "{{system_project_short}}_apiserver"
+
+project_app_web_port: '4{{system_project_id}}01'
+project_app_rpcapi_port: '2{{system_project_id}}01'
+project_app_restapi_port: '3{{system_project_id}}01'
+
+project_app_celeryflower_port: '3{{system_project_id}}91'
+
+project_web_port: '4{{system_project_id}}01'
+
+system_project_hostname: '<{ cookiecutter.domain_name }>'

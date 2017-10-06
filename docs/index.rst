@@ -1,4 +1,4 @@
-Welcome to cookiecutter-xingzhe-django's documentation!
+Welcome to cookiecutter-xproject's documentation!
 ======================================
 
 Contents:

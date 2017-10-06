@@ -1,0 +1,76 @@
+version: '2'
+
+volumes:
+  {% if cookiecutter.use_mysql == 'y' -%}
+  mysql_data: {}
+  mysql_backup: {}
+  {%- endif %}
+  {% if cookiecutter.use_postgresql == 'y' -%}
+  postgres_data: {}
+  postgres_backup: {}
+  {%- endif %}
+  redis_data: {}
+
+services:
+
+  django: &base
+    image: {{cookiecutter.system_project_short}}_django:latest-prod
+    environment:
+      - DJANGO_SETTINGS_MODULE={{cookiecutter.system_slug}}_conf.settings.production
+      - DOT_ENV_FILE=./{{cookiecutter.system_slug}}_conf/production.env
+    env_file:
+      - ./{{cookiecutter.system_slug}}_conf/production.env
+    entrypoint:
+      - /entrypoint.sh
+    volumes:
+      - ./:/app
+    links:
+      - redis
+      {% if cookiecutter.use_mysql == 'y' -%}
+      - mysql
+      {%- endif %}
+      {% if cookiecutter.use_postgresql == 'y' -%}
+      - postgres
+      {%- endif %}
+    depends_on:
+      - redis
+      {% if cookiecutter.use_mysql == 'y' -%}
+      - mysql
+      {%- endif %}
+      {% if cookiecutter.use_postgresql == 'y' -%}
+      - postgres
+      {%- endif %}
+
+  web:
+    <<: *base
+    depends_on:
+      - django
+    entrypoint:
+      - /entrypoint.sh
+      - /gunicorn.sh
+
+  {% if cookiecutter.use_mysql == 'y' -%}
+  mysql:
+    build: ./compose/mysql
+    env_file:
+      - ./{{cookiecutter.system_slug}}_conf/local.env
+    volumes:
+      - ./compose/mysql/conf.d:/etc/mysql/conf.d
+      - mysql_data:/var/lib/mysql
+      - mysql_backup:/backups
+  {%- endif %}
+
+  {% if cookiecutter.use_postgresql == 'y' -%}
+  postgres:
+    build: ./compose/postgres
+    env_file:
+      - ./{{cookiecutter.system_slug}}_conf/local.env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - postgres_backup:/backups
+  {%- endif %}
+
+  redis:
+    image: redis
+    volumes:
+      - redis_data:/data

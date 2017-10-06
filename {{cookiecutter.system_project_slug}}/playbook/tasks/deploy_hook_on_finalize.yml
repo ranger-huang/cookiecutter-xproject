@@ -1,0 +1,76 @@
+---
+
+- name: Create symlinks of project runtime currently
+  file:
+    src: "{{ deploy_helper.new_release_path }}"
+    path: "{{ project_runtime_home }}"
+    state: link
+    force: yes
+
+#- name: Ensure supervisor configration file is present
+#  file:
+#    src: "{{ deploy_helper.new_release_path }}/web.supervisord.conf"
+#    path: "{{ project_root }}/web.supervisord.conf"
+#    state: link
+#    force: yes
+#
+#- name: Ensure supervisor configration file is link to /etc/supervisor/conf.d/
+#  file:
+#    src: "{{ project_root }}/web.supervisord.conf"
+#    path: "/etc/supervisor/conf.d/{{system_project_slug}}.supervisord.conf"
+#    state: link
+#    force: yes
+
+
+- name: Ensure nginx configration file is present
+  file:
+    src: "{{ deploy_helper.new_release_path }}/web.nginx.conf"
+    path: "{{ project_root }}/web.nginx.conf"
+    state: link
+    force: yes
+
+- name: "Ensure nginx configration file is link to /etc/nginx/{{item}}/"
+  file:
+    src: "{{ project_root }}/web.nginx.conf"
+    path: "/etc/nginx/{{item}}/{{system_project_slug}}.conf"
+    state: link
+    force: yes
+  with_items:
+    - site-available
+    - site-enabled
+
+- name: Ensure log directory of project runtime is present
+  file:
+    path: "{{ project_runtime_home }}/log"
+    state: directory
+
+- name: Ensure prod.env of project is present
+  copy:
+    src: "files/prod.env"
+    dest: "{{ project_runtime_home }}/.env"
+
+- name: Ensure publish directory of site is present
+  file:
+    path: "{{project_root}}/publish"
+    state: directory
+    recurse: yes
+
+- name: Ensure weixin mp_verify file is present
+  file:
+    path: "{{project_root}}/publish/mp"
+    state: directory
+
+- name: Ensure weixin mp_verify file is present
+  copy:
+    src: "files/MP_verify_AxddJbXcOVUIAtbE.txt"
+    dest: "{{project_root}}/publish/mp/MP_verify_AxddJbXcOVUIAtbE.txt"
+
+#- name: Ensure appsrc is present
+#  copy:
+#    src: "{{playbook_dir}}/../appsrc"
+#    dest: "{{ project_runtime_home }}/"
+
+# - name: Ensure cert file is present
+#   copy:
+#     src: "files/cert_wxpay/"
+#     dest: "{{ project_runtime_home }}/xlock_conf/cert_wxpay"

@@ -1,0 +1,25 @@
+{{ runtime_log_dir }}/*.log {    {# //注意：具体请以自己的nginx日志为准 #}
+
+    daily                         {#  //每天切割 #}
+
+    dateext                       {#  //%Y%m%d作为后缀 #}
+
+    missingok                     {#  //日志不存在，分析下一个
+
+    rotate 5                      {# //保留两个备份 #}
+
+    compress                      {#  //转储之后压缩.tar.gz #}
+
+    notifempty                    {#  //空文件不转储 #}
+
+    create 640 nginx adm         {# //新日志文件模式 #}
+
+    sharedscripts                 {#  //整个日志组运行一次的脚本 #}
+
+    postrotate
+            [ -f {{ runtime_pidfile }} ] && kill -USR1 `cat {{ runtime_pidfile }}` {# //重启nginx，重新加载日志文件，防止不写 #}
+
+            `cp -f {{ runtime_log_dir }}/*.* {{ runtime_backup_dir }} ` {# //自定义脚本，将旧日志copy到backup文件夹（backup要存在）#}
+
+    endscript
+}

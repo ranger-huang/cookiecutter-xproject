@@ -1,0 +1,21 @@
+---
+
+- file:
+    path: /usr/local/devtools/upyun
+    state: directory
+
+- name: Ensure command upx is present
+  get_url:
+    url: "{{upyun_command_url}}"
+    dest: /usr/local/devtools/upyun/upx
+    mode: 0755
+
+- name: link upx to bin directory
+  file:
+    src: /usr/local/devtools/upyun/upx
+    dest: /usr/local/bin/upx
+    state: link
+    mode: 0755
+
+- name: upx sign in
+  shell: "/usr/local/bin/upx login {{upyun_bucket_name}} {{upyun_operatior_name}} {{upyun_operatior_password}}"

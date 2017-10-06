@@ -1,0 +1,60 @@
+version: '2'
+
+services:
+
+  django: &base
+    image: {{cookiecutter.system_project_short}}_django:latest-local
+    environment:
+      - DJANGO_SETTINGS_MODULE={{cookiecutter.system_slug}}_conf.settings.local
+      - DOT_ENV_FILE=./{{cookiecutter.system_slug}}_conf/local.env
+    env_file:
+      - ./{{cookiecutter.system_slug}}_conf/local.env
+    links:
+      - redis
+      {% if cookiecutter.use_mysql == 'y' -%}
+      - mysql
+      {%- endif %}
+      {% if cookiecutter.use_postgresql == 'y' -%}
+      - postgres
+      {%- endif %}
+    depends_on:
+      - redis
+      {% if cookiecutter.use_mysql == 'y' -%}
+      - mysql
+      {%- endif %}
+      {% if cookiecutter.use_postgresql == 'y' %}
+      - postgres
+      {%- endif %}
+    volumes:
+      - .:/app
+    entrypoint:
+      - /entrypoint.sh
+
+  web:
+    <<: *base
+    depends_on:
+      - django
+    entrypoint:
+      - /entrypoint.sh
+      - /start-dev.sh
+    ports:
+      - 8000:8000
+
+  {% if cookiecutter.use_mysql == 'y' -%}
+  mysql:
+    build: ./compose/mysql
+    env_file:
+      - ./{{cookiecutter.system_slug}}_conf/local.env
+    volumes:
+      - ./compose/mysql/conf.d:/etc/mysql/conf.d
+  {%- endif %}
+
+  {% if cookiecutter.use_postgresql == 'y' -%}
+  postgres:
+    build: ./compose/postgres
+    env_file:
+      - ./{{cookiecutter.system_slug}}_conf/local.env
+  {%- endif %}
+
+  redis:
+    image: redis

@@ -1,16 +1,15 @@
 ===========================
-cookiecutter-xingzhe-django
+cookiecutter-xproject
 ===========================
 
 
 
-.. image:: https://pyup.io/repos/github/killuavx/cookiecutter-xingzhe-django/shield.svg
-     :target: https://pyup.io/repos/github/killuavx/cookiecutter-xingzhe-django/
+.. image:: https://pyup.io/repos/github/ranger-huang/cookiecutter-xproject/shield.svg
+     :target: https://pyup.io/repos/github/ranger-huang/cookiecutter-xproject/
      :alt: Updates
 
 
-A Cookiecutter template for creating Xingzhe Django projects quickly.
-
+A Cookiecutter template for creating XProject(Django) quickly.
 
 
 Features

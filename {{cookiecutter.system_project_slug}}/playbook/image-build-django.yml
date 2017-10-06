@@ -1,0 +1,110 @@
+#jinja2:variable_start_string:'<{' , variable_end_string:'}>', block_start_string:'<%', block_end_string:'%>'
+- name: Build Project Django Docker Image
+  gather_facts: no
+  vars_prompt:
+    - name: 'version'
+      prompt: 'build version'
+      default: '0.0.1'
+      private: no
+    - name: 'type'
+      prompt: 'Environment type to build: [local, production, test]'
+      private: no
+      default: 'local'
+    - name: 'base_image_version'
+      prompt: 'base image version'
+      private: no
+      default: 'latest'
+    - name: 'base_image_name'
+      prompt: 'base image name'
+      private: no
+      default: '<{ cookiecutter.system_project_slug }>'
+  hosts: localhost
+  vars:
+    namespace_slug: xingzhe_server
+    django_image_name: "{{base_image_name|replace('_', '')}}_django"
+
+  pre_tasks:
+    - include_vars: './vars/asset.yml'
+    - include_vars: './vars/main.yml'
+
+  tasks:
+    - name: Get Project Root
+      shell: dirname `pwd`
+      register: cmd
+
+    - name: find image
+      shell: 'docker images {{base_image_name}}:{{base_image_version}} --format \{\{.ID\}\}'
+      register: image
+
+    - name: 1. Build an base image and push it to a private repo
+      docker_image:
+        path: "{{build_root}}"
+        dockerfile: "{{build_root}}/compose/django/{{base_image_name}}.Dockerfile"
+        repository: "{{docker_registry_domain}}/{{namespace_slug}}/{{base_image_name}}"
+        name: "{{base_image_name}}"
+        tag: "{{base_image_version}}"
+        push: yes
+        rm: False
+      when: "docker_registry_domain != '' and image.stdout == ''"
+      vars:
+        build_root: "{{cmd.stdout}}"
+      register: base_build
+
+    - name: 1. Build an base image without push it to private repo
+      docker_image:
+        path: "{{build_root}}"
+        dockerfile: "{{build_root}}/compose/django/{{base_image_name}}.Dockerfile"
+        name: "{{base_image_name}}"
+        tag: "{{base_image_version}}"
+        push: yes
+        rm: False
+      vars:
+        build_root: "{{cmd.stdout}}"
+      when: "not docker_registry_domain and image.stdout == ''"
+      register: base_build
+
+    - name: 2. Build an django image and push it to a private repo
+      docker_image:
+        path: "{{build_root}}"
+        dockerfile: "{{build_root}}/compose/django/{{type}}.Dockerfile"
+        name: "{{django_image_name}}"
+        repository: "{{docker_registry_domain}}/{{namespace_slug}}/{{django_image_name}}"
+        tag: "{{version}}-{{type}}"
+        pull: False
+        push: yes
+        rm: False
+      vars:
+        build_root: "{{cmd.stdout}}"
+      register: django_build
+      #when: base_build.changed
+      when: "docker_registry_domain != ''"
+
+    - name: 2. Build an django image and push it to a private repo
+      docker_image:
+        path: "{{build_root}}"
+        dockerfile: "{{build_root}}/compose/django/{{type}}.Dockerfile"
+        name: "{{django_image_name}}"
+        tag: "{{version}}-{{type}}"
+        pull: False
+        rm: False
+      vars:
+        build_root: "{{cmd.stdout}}"
+      register: django_build
+      #when: base_build.changed
+      when: not docker_registry_domain
+
+    - name: 3. Retag prod image to default
+      shell: docker tag {{django_image_name}}:{{version}}-{{type}} {{django_image_name}}:{{version}}
+      when: type == 'prod' and django_build.changed
+
+    - name: 4. Remove registry image tag on local
+      docker_image:
+        name: "{{item.name}}"
+        tag: "{{item.tag}}"
+        state: absent
+      with_items:
+        - name: "{{docker_registry_domain}}/{{namespace_slug}}/{{django_image_name}}"
+          tag: "{{version}}-{{type}}"
+        - name: "{{docker_registry_domain}}/{{namespace_slug}}/{{base_image_name}}"
+          tag: "{{base_image_version}}"
+      when: "docker_registry_domain != ''"

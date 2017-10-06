@@ -1,0 +1,75 @@
+#jinja2:variable_start_string:'<{' , variable_end_string:'}>', block_start_string:'<%', block_end_string:'%>'
+- name: Pull Project Service Docker Image
+  gather_facts: no
+  vars_prompt:
+    - name: 'hosts'
+      prompt: 'launch to hosts'
+      default: 'localhost'
+      private: no
+    - name: 'version'
+      prompt: 'pull version'
+      default: '0.1.0'
+      private: no
+    - name: 'version_to_latest'
+      prompt: 'version tag to latest [no, yes]'
+      default: 'no'
+      private: no
+    - name: 'type'
+      prompt: 'Environment type to pull: [local, production, test]'
+      private: no
+      default: 'dev'
+    - name: 'base_image_version'
+      prompt: 'base image version'
+      private: no
+      default: 'latest'
+    - name: 'base_image_name'
+      prompt: 'base image name'
+      private: no
+      default: '<{ cookiecutter.system_project_slug }>'
+  hosts: "{{hosts}}"
+  vars:
+    namespace_slug: xingzhe_server
+    service_image_name: "{{base_image_name|replace('_', '')}}_django"
+
+  pre_tasks:
+    - include_vars: './vars/asset.yml'
+    - include_vars: './vars/main.yml'
+
+  tasks:
+    - fail:
+        msg: 'docker_registry_domain not set yet'
+      when: "not docker_registry_domain"
+
+    - name: Get Project Root
+      shell: dirname `pwd`
+      register: cmd
+
+    - name: Pull an base image
+      docker_image:
+        name: "{{docker_registry_domain}}/{{namespace_slug}}/{{base_image_name}}"
+        tag: "{{base_image_version}}"
+        pull: yes
+
+    - name: Pull app image
+      docker_image:
+        name: "{{docker_registry_domain}}/{{namespace_slug}}/{{service_image_name}}"
+        tag: "{{version}}-{{type}}"
+        pull: yes
+
+    - name: Retag repository image to local
+      shell: docker tag {{item.repo_name}} {{item.local_name}}
+      with_items:
+        - repo_name: "{{docker_registry_domain}}/{{namespace_slug}}/{{service_image_name}}:{{version}}-{{type}}"
+          local_name: "{{service_image_name}}:{{version}}-{{type}}"
+        - repo_name: "{{docker_registry_domain}}/{{namespace_slug}}/{{base_image_name}}:{{base_image_version}}"
+          local_name: "{{base_image_name}}:{{base_image_version}}"
+
+    - name: Untag repository image
+      shell: docker rmi {{item}}
+      with_items:
+        - "{{docker_registry_domain}}/{{namespace_slug}}/{{service_image_name}}:{{version}}-{{type}}"
+        - "{{docker_registry_domain}}/{{namespace_slug}}/{{base_image_name}}:{{base_image_version}}"
+
+    - name: Tag django image to latest
+      shell: docker tag {{service_image_name}}:{{version}}-{{type}} {{service_image_name}}:latest-{{type}}
+      when: version_to_latest == 'yes'

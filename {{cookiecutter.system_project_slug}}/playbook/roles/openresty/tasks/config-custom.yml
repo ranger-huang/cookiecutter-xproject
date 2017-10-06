@@ -1,0 +1,18 @@
+
+- name: custom setup site-available config files
+  template:
+    src: "templates/nginx/site-available/{{ item }}.j2"
+    dest: "{{ openresty_install_dir }}/nginx/conf/site-available/{{ item }}"
+  with_items:
+    - jenkins.conf
+    - wordpress.conf
+
+- name: custom setup site-enabled config files
+  file:
+    src: "{{ openresty_install_dir }}/nginx/conf/site-available/{{ item }}"
+    dest: "{{ openresty_install_dir }}/nginx/conf/site-enabled/{{ item }}"
+    state: link
+    force: yes
+  with_items:
+    - jenkins.conf
+    - wordpress.conf

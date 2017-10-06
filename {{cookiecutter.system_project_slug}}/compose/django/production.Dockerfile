@@ -5,8 +5,8 @@ ENV PYTHONUNBUFFERED 1
 RUN mkdir -p /appsrc
 RUN mkdir -p $HOME/.ssh
 COPY ./compose/django/ssh.d /root/.ssh
-RUN sed -i 's/#   StrictHostKeyChecking ask/   StrictHostKeyChecking no/g' /etc/ssh/ssh_config
-RUN chmod 0600 /root/.ssh/id_rsa
+RUN sed -i 's/#   StrictHostKeyChecking ask/   StrictHostKeyChecking no/g' /etc/ssh/ssh_config | true
+RUN chmod 0600 /root/.ssh/id_rsa | true
 
 COPY ./requirements /requirements
 RUN pip3 install -r /requirements/production.txt \

@@ -1,0 +1,8 @@
+[behave]
+#format=json
+format=allure_behave.formatter:AllureFormatter
+logging_clear_handlers=yes
+logging_filter=-suds
+color=yes
+junit=yes
+junit_directory=./test-reports/allure-reports

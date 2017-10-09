@@ -1,8 +1,12 @@
 #!/bin/sh
-rm -f /app/.noseids /app/.coverage
-rm -rf /app/test-reports /app/allure-reports
-mkdir -p /app/test-reports /app/test-reports/allure-reports
-python3 manage.py behave {{cookiecutter.system_project_slug}}/fts/features/
-python3 manage.py test --keepdb {{cookiecutter.system_project_slug}}.tests
+test_type=$1
 
-python3 manage.py migrate && python3 manage.py runserver 0.0.0.0:8000
+if [[ "$test_type" ='UT' ]]; then
+    python3 manage.py test --keepdb {{cookiecutter.system_project_slug}}.tests
+elif [[ "$test_type" ='FT' ]]; then
+    python3 manage.py behave --keepdb {{cookiecutter.system_project_slug}}/fts/features/
+else
+    python3 manage.py test --keepdb {{cookiecutter.system_project_slug}}.tests
+    python3 manage.py behave --keepdb {{cookiecutter.system_project_slug}}/fts/features/
+fi
+# python3 manage.py migrate && python3 manage.py runserver 0.0.0.0:8000

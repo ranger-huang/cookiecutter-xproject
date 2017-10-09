@@ -2,7 +2,6 @@
 # project_deploy
 # ----------------------------------------------------------------------------------------------------
 project_local_path: "{{ playbook_dir }}/.."
-project_name: "changeme"
 project_root: "/data/servers/<{ cookiecutter.system_project_slug }>"
 project_unwanted_items: [ '.git', '.idea', '<{ cookiecutter.system_project_slug }>.iml' ]
 project_git_repo: "git@git.coding.net:bi-ci/<{ cookiecutter.system_project_slug }>.git"

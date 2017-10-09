@@ -15,6 +15,9 @@ services:
       - redis
     links:
       - redis
+    entrypoint:
+      - /entrypoint-test.sh
+      - /start-test.sh
 
   redis:
     image: redis

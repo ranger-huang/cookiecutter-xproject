@@ -28,6 +28,4 @@ RUN sed -i 's/\r//' /entrypoint.sh \
 
 WORKDIR /app
 
-RUN pip3 install --upgrade --src /appsrc -r /requirements/xingzhe.txt
-
 ENTRYPOINT ["/entrypoint.sh"]

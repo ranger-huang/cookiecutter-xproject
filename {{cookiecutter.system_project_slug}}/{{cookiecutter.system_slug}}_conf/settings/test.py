@@ -15,14 +15,15 @@ NOSE_ARGS = [
     '--stop',
     '--nocapture',
     '--with-cov',
-    '--cov-config=' + str(ROOT_DIR.path('{{cookiecutter.system_slug}}_conf/.coveragerc')),
-    '--cov=' + str(ROOT_DIR.path()),
+    '--cov-config=' + str(ROOT_DIR.path('.coveragerc')),
+    '--cov=' + str(ROOT_DIR.path('{{cookiecutter.system_project_slug}}')),
     '--cov-report=html',
     '--cov-report=xml',
     '--with-xunit',
     '--xunit-file=' + str(ROOT_DIR.path('test-reports/junit.xml')),
     '--with-allure',
     '--logdir=' + str(ROOT_DIR.path('test-reports/allure-reports')),
+    '--not-clear-logdir',
 ]
 
 STATIC_URL = '/static/'

@@ -10,6 +10,7 @@
 
     "author_name": "Your Name",
     "email": "your.name@domain.com",
+    "git_url": "https://github.com/path/to/project.git",
 
     "description": "A short description of the project.",
     "domain_name": "{{ cookiecutter.project_slug }}.{{ cookiecutter.system_slug }}.com",

@@ -1,0 +1,86 @@
+
+node {
+    def GIT_CREDENTIALS_ID='git credentials id'
+    def GIT_REPO_URL='{{cookiecutter.git_url}}'
+    def GIT_BRANCH_NAME='*/develop'
+    def INVENTORY_FILE_ID='inventory file id'
+
+    stage('Checkout SCM'){
+        checkout(changelog: true, poll: true,
+                scm: [$class: 'GitSCM', branches: [[name: GIT_BRANCH_NAME]],
+                      browser: [$class: 'GitLab', repoUrl: GIT_REPO_URL, version: '3.1'],
+                      doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [],
+                      userRemoteConfigs: [[credentialsId: GIT_CREDENTIALS_ID, url: GIT_REPO_URL]]
+                ]
+        )
+
+    }
+
+    stage('Preparation') {
+        configFileProvider([configFile(fileId: INVENTORY_FILE_ID, targetLocation: 'playbook/inventory-file.ini')]) {
+            // some block
+        }
+
+        parallel (
+                "[Playbook]Build Composefiles": {
+                    dir('playbook'){
+                        sh "sudo ansible-playbook -i inventory-file.ini build_dcfiles.yml -e hosts=localhost"
+                    }
+                },
+                "[Playbook]Image Pull": {
+                    dir('playbook'){
+                        sh """
+                            sudo ansible-playbook -i inventory-file.ini image-pull.yml \
+                            -e hosts=localhost \
+                            -e version=${APP_IMAGE_VERSION} \
+                            -e type=test \
+                            -e version_to_latest=yes \
+                            -e base_image_version=latest \
+                            -e base_image_name={{cookiecutter.system_project_slug}}
+                        """
+                    }
+                }
+        )
+
+    }
+
+    try{
+        stage('Build') {
+            sh "rm -f .noseids /app/.coverage"
+            sh "rm -rf test-reports/"
+            sh "mkdir -p test-reports test-reports/allure-reports"
+            sh "sudo docker-compose up -d django"
+        }
+
+        stage('Test') {
+            // All test
+            // UT
+            // FT
+            // AT
+            // IT
+            parallel (
+                    "Unit Test": {
+                        sh """ sudo docker-compose run --rm -T \
+                            django python3 manage.py test --keepdb {{cookiecutter.system_project_slug}}.tests
+                       """
+                    },
+                    "Feature Test": {
+                        sh """ sudo docker-compose run --rm -T \
+                            django python3 manage.py behave --keepdb {{cookiecutter.system_project_slug}}/fts/features
+                       """
+                    },
+            )
+        }
+
+    } finally {
+        sh "sudo docker-compose down "
+    }
+
+    stage('Results') {
+        // junit allowEmptyResults: true, testResults: '**/test-reports/junit.xml'
+    }
+    stage('Release') {
+        // Tag SCM Version && push --tags $remote $branch
+        // Tag Docker Image Version && Push Docker Image
+    }
+}

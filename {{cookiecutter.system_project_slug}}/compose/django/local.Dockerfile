@@ -21,11 +21,4 @@ RUN chmod +x /start-dev.sh
 
 WORKDIR /app
 
-#RUN git clone https://github.com/wxpay/WXPay-SDK-Python.git && \
-#     cd WXPay-SDK-Python && echo "" > README.rst && python3 setup.py install && \
-#     cd - && rm -rf WXPay-SDK-Python
-
-RUN chmod 0600 /root/.ssh/id_rsa
-RUN pip3 install --upgrade --src /appsrc -r /requirements/xingzhe.txt
-
 ENTRYPOINT ["/entrypoint.sh"]

@@ -28,7 +28,7 @@
       default: '<{ cookiecutter.system_project_slug }>'
   hosts: "{{hosts}}"
   vars:
-    namespace_slug: xingzhe_server
+    namespace_slug: image_namespace
     service_image_name: "{{base_image_name|replace('_', '')}}_django"
 
   pre_tasks:

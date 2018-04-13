@@ -38,6 +38,7 @@
     "release_date": "{% now 'local' %}",
     "_extensions": ["jinja2_time.TimeExtension"],
     "_copy_without_render": [
+        "playbook/*.yml",
         "playbook/defaults/*",
         "playbook/files/*",
         "playbook/handlers/*",
